@@ -1,5 +1,5 @@
 ---
-title: EDA
+title: Problem Statement and EDA
 notebook: Milestone_2.ipynb
 nav_include: 1
 ---
