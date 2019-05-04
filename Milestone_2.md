@@ -3,6 +3,7 @@ title: EDA
 notebook: Milestone_2.ipynb
 Nav_include:2
 ---
+# Project Statement and EDA
 
 ## Contents
 {:.no_toc}
@@ -12,7 +13,7 @@ Nav_include:2
 
 ## Project Statement and EDA
 
-## 2. Problem Statement
+## Problem Statement
 
 We have decided to exploit state-of-the-art models like ResNet and VGG through transfer learning to perform classification, as past research has demonstrated that these deep CNNs perform substantially better than hand-trained, shallower networks at classification of images from the DDSM dataset [3].
 
@@ -24,7 +25,7 @@ Finally, we have also considered:
 
 * Conducting a user study to evaluate different methods of explanation/interpretability to physicians/radiologists/medical students
 
-## 3. Literature review
+## Literature review
 
 <br>
 
@@ -60,7 +61,7 @@ Finally, we have also considered:
 
 
 
-## 4. Data Background
+## Data Background
 
 We chose to work with the USF Digital Database for Screening Mammography (DDSM), which, while widely used in the literature, requires extensive preprocessing to get to a form that can be used for even basic analysis. Given time constraints, we therefore drew on a prepared version of the dataset provided by [1] so that we could focus on the more interesting and valuable tasks of image classification and classifier interpretability. 
 
@@ -81,11 +82,11 @@ The observations are labelled as follows:
 
 Whereas the observations of class 0 originate from the DDSM, those of classes 1-4 come from the CBIS-DDSM.
 
-## 5. Preliminary EDA
+## EDA
 
-### 5.1: Data Preparation
+### Data Preparation
 
-The training data are stored in tfrecords files. We extract the images and store them in corresponding folder with the implemented class $\texttt{TFRecordExtractor}$. The labels and images location are stored in a $\texttt{.csv}$ file. To extract the tfrecords, we used the implementation found in [1]. Once we have post-processed the images into their respective folder, we build one global folder $\texttt{images}$ containing all the images and one $\texttt{.csv}$ file $\texttt{training_data.csv}$ containing the labels and the file locations.
+The training data are stored in tfrecords files. We extract the images and store them in corresponding folder with the implemented class $$\texttt{TFRecordExtractor}$$. The labels and images location are stored in a $$\texttt{.csv}$$ file. To extract the tfrecords, we used the implementation found in [1]. Once we have post-processed the images into their respective folder, we build one global folder $$\texttt{images}$$4 containing all the images and one $$\texttt{.csv}$$ file $$\texttt{training_data.csv}$$ containing the labels and the file locations.
 
 
 
@@ -117,7 +118,7 @@ train_label_df = train_label_df.drop(columns=['normal_class','Unnamed: 0'])
 ```
 
 
-### 5.2: Preliminary Analysis
+### Analysis
 
 **Summary tables**
 
@@ -405,7 +406,7 @@ plt.legend();
 
 From the distributions above, we see that for higher class labels, the mean of the distribution is shifted to the right and the images contain more light. The left tail of the distribution for class $0$ could be an indication of un-cleaned images with text labels or black backgrounds. 
 
-## 6. References
+## References
 
 [1] Eric A. Scuccimarra, DDSM dataset, Version 10. Accessed at https://github.com/escuccim/mias-mammography
 
