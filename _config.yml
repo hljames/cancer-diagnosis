@@ -1,6 +1,6 @@
 theme: jekyll-theme-primer
-title: Support Vector Olives
-description: Keeping Italian Olives Pure!
+title: Cancer Diagnosis
+description: AC209b Final Project
 baseurl:
 markdown: kramdown
 kramdown:

@@ -7,7 +7,7 @@ title: Cancer Diagnosis
 # AC209b Final Project: Cancer Diagnosis
 
 
-### Daniel Melancon, Estefania Lahera, Hailey James, Nathan Einstein
+### David Melancon, Estefania Lahera, Hailey James, Nathan Einstein
 #### Harvard University
 
 ### Overview
