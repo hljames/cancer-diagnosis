@@ -1,6 +1,8 @@
-Title: Cancer Diagnosis
+---
 nav_include: 1
+title: Cancer Diagnosis
 
+---
 
 # AC209b Final Project: Cancer Diagnosis
 
