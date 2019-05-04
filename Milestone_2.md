@@ -1,7 +1,7 @@
 ---
 title: EDA
 notebook: Milestone_2.ipynb
-Nav_include:2
+nav_include:2
 ---
 # Project Statement and EDA
 
@@ -10,8 +10,6 @@ Nav_include:2
 *  
 {: toc}
 
-
-## Project Statement and EDA
 
 ## Problem Statement
 
