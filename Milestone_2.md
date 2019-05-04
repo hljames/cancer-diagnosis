@@ -1,5 +1,5 @@
 ---
-title: Subset the dataframe by class
+title: EDA
 notebook: Milestone_2.ipynb
 Nav_include:2
 ---
