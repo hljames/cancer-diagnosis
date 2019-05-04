@@ -1,5 +1,4 @@
 ---
-nav_include: 1
 title: Cancer Diagnosis
 
 ---
