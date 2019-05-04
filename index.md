@@ -1,21 +1,12 @@
-Title: Lab 11: Italian Olives
-Category: labs
-Slug: lab11
-Author: Rahul Dave
-Date: 2018-12-02
+Title: Cancer Diagnosis
+nav_include: 1
 
----
-title: The Case of the Italian Olives
----
 
-This is the home page
+# AC209b Final Project: Cancer Diagnosis
 
-## Lets have fun
 
->here is a quote
+## Daniel Melancon, Estefania Lahera, Hailey James, Nathan Einstein
 
-Here is *emph* and **bold**.
+#### Overview
 
-Here is some inline math $\alpha = \frac{\beta}{\gamma}$ and, of-course, E rules:
-
-$$ G_{\mu\nu} + \Lambda g_{\mu\nu}  = 8 \pi T_{\mu\nu} . $$
+We were tasked with producing a neural network to classify cancer and then develop methods or attempt already known strategies to make the models more explainable. We....
