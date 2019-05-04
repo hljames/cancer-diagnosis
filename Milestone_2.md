@@ -1,7 +1,7 @@
 ---
-title: EDA
+title: Subset the dataframe by class
 notebook: Milestone_2.ipynb
-nav_include:2
+Nav_include:2
 ---
 
 ## Contents
@@ -9,9 +9,12 @@ nav_include:2
 *  
 {: toc}
 
+
 ## Project Statement and EDA
 
-<hr style="height:2pt">We have decided to exploit state-of-the-art models like ResNet and VGG through transfer learning to perform classification, as past research has demonstrated that these deep CNNs perform substantially better than hand-trained, shallower networks at classification of images from the DDSM dataset [3].
+## 2. Problem Statement
+
+We have decided to exploit state-of-the-art models like ResNet and VGG through transfer learning to perform classification, as past research has demonstrated that these deep CNNs perform substantially better than hand-trained, shallower networks at classification of images from the DDSM dataset [3].
 
 Once we have classified images, we plan to compare several possible techniques -- e.g. t-SNE, Shapley values, LICE, adversarial attack-like changes to the input -- to identify how the model classifies positive cases, especially where the model's result differs from the ground truth. We also plan to compare several approaches to help determine the amount of confidence that one can have in the classification (e.g. using a "trust score" similar to [4]), and to consider the degree to which such confidence scores help explain incorrect classifications as well as what factors make the model less certain of its classification.
 
@@ -82,67 +85,6 @@ Whereas the observations of class 0 originate from the DDSM, those of classes 1-
 
 ### 5.1: Data Preparation
 
-
-
-```python
-from google.colab import drive
-drive.mount("/content/gdrive")
-```
-
-
-    Go to this URL in a browser: https://accounts.google.com/o/oauth2/auth?client_id=947318989803-6bn6qk8qdgf4n4g3pfee6491hc0brc4i.apps.googleusercontent.com&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scope=email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdocs.test%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.photos.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fpeopleapi.readonly&response_type=code
-    
-    Enter your authorization code:
-    ··········
-    Mounted at /content/gdrive
-
-
-
-
-```python
-'''IMPORT LIBRARIES'''
-import requests
-import os
-
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import shutil
-import cv2
-
-from scipy.misc import imresize
-from sklearn.model_selection import train_test_split
-
-from keras.models import Sequential, Model, load_model
-from keras.layers import Dropout, Flatten, Dense, Conv2D, MaxPooling2D
-from keras.layers import Input, Reshape, UpSampling2D, InputLayer, Lambda, ZeroPadding2D
-from keras.layers import Cropping2D, Conv2DTranspose, BatchNormalization, Activation
-from keras.utils import np_utils, to_categorical, Sequence
-from keras.losses import binary_crossentropy
-from keras import backend as K,objectives
-from keras.losses import mse, binary_crossentropy
-from keras.layers.advanced_activations import LeakyReLU
-from keras.optimizers import Adam, RMSprop
-from keras.initializers import RandomNormal
-from keras.preprocessing import image
-import tensorflow as tf
-import random
-
-from PIL import Image
-
-from IPython.core.display import HTML
-styles = requests.get("https://raw.githubusercontent.com/Harvard-IACS/2018-CS109A/master/content/styles/cs109.css").text
-HTML(styles)
-
-os.chdir("/content/gdrive/Team Drives/AC209b_final_project/")
-
-np.random.seed(42)
-```
-
-
-    Using TensorFlow backend.
-
-
 The training data are stored in tfrecords files. We extract the images and store them in corresponding folder with the implemented class $\texttt{TFRecordExtractor}$. The labels and images location are stored in a $\texttt{.csv}$ file. To extract the tfrecords, we used the implementation found in [1]. Once we have post-processed the images into their respective folder, we build one global folder $\texttt{images}$ containing all the images and one $\texttt{.csv}$ file $\texttt{training_data.csv}$ containing the labels and the file locations.
 
 
@@ -168,466 +110,11 @@ test_labels = test_labels[test_indexes]
 
 
 ```python
-class TFRecordExtractor:
-    def __init__(self, tfrecord_file, csv_name, folder_name, start_id):
-        self.tfrecord_file = os.path.abspath(tfrecord_file)
-        self.csv_name = csv_name
-        self.folder_name = folder_name
-        self.count = start_id
-
-    def _extract_fn(self, tfrecord):
-        # Extract features using the keys set during creation
-        feature = {'label': tf.FixedLenFeature([], tf.int64),
-                   'label_normal': tf.FixedLenFeature([], tf.int64),
-                   'image': tf.FixedLenFeature([], tf.string)}
-
-        # Decode the record read by the reader
-        features = tf.parse_single_example(tfrecord, features=feature)
-        
-        # Convert the image data from string to numeric
-        image = tf.decode_raw(features['image'], tf.uint8)
-
-        label = features['label']
-        label_normal = features['label_normal']
-        image = tf.reshape(image, [299, 299, 1])
-        return [image,label,label_normal]
-
-
-    def post_process_images(self):
-        image_data_list = self.get_images()
-        b_c_df = pd.DataFrame(columns=['id', 'class', 'normal_class'])
-
-        id_list = []
-        class_list = []
-        normal_class_list = []
-
-        for image_data in image_data_list:
-            self.count = self.count + 1
-            file_name = self.folder_name+'//' + 'c' + str(self.count)
-            id_list.append('c' + str(self.count))
-
-            class_list.append(image_data[1])
-            normal_class_list.append(image_data[2])
-
-            cv2.imwrite(file_name+".png",image_data[0])
-
-        id_arr = np.array(id_list)
-        class_arr = np.array(class_list)
-        normal_class_arr = np.array(normal_class_list)
-
-        b_c_df["id"]  = pd.Series(id_arr)
-        b_c_df["class"] = pd.Series(class_arr)
-        b_c_df["normal_class"] = pd.Series(normal_class_arr)
-
-        b_c_df.to_csv(path_or_buf=self.csv_name+'.csv', 
-                      columns=['id', 'class', 'normal_class'])
-
-    def get_images(self):
-        # Initialize all tfrecord paths
-        dataset = tf.data.TFRecordDataset([self.tfrecord_file])
-        dataset = dataset.map(self._extract_fn)
-        iterator = dataset.make_one_shot_iterator()
-        next_element = iterator.get_next()
-
-        with tf.Session() as sess:
-            sess.run(tf.global_variables_initializer())
-            image_data_list = []
-            try:
-                while True:
-                    image_data = sess.run(next_element)
-                    image_data_list.append(image_data)
-            except:
-                pass
-
-            return image_data_list
-```
-
-
-
-
-```python
-'''EXTRACT TRAINING DATA'''
-
-start_id = 0
-n_im_tf = 11177
-t10_0 = TFRecordExtractor('/content/gdrive/Team Drives/AC209b_final_project//training10_0.tfrecords','training10_0','training10_0',start_id)
-start_id += n_im_tf
-t10_1 = TFRecordExtractor('/content/gdrive/Team Drives/AC209b_final_project//training10_1.tfrecords','training10_1','training10_1',start_id)
-start_id += n_im_tf
-t10_2 = TFRecordExtractor('/content/gdrive/Team Drives/AC209b_final_project//training10_2.tfrecords','training10_2','training10_2',start_id)
-start_id += n_im_tf
-t10_3 = TFRecordExtractor('/content/gdrive/Team Drives/AC209b_final_project//training10_3.tfrecords','training10_3','training10_3',start_id)
-start_id += n_im_tf
-t10_4 = TFRecordExtractor('/content/gdrive/Team Drives/AC209b_final_project//training10_4.tfrecords','training10_4','training10_4',start_id)
-
-for extractor in [t10_2, t10_3, t10_4]:
-    extractor.post_process_images()
-```
-
-
-
-
-```python
-!pwd
-```
-
-
-    /content/gdrive/Team Drives/AC209b_final_project
-
-
-
-
-```python
 '''IMPORT TRAINING LABELS'''
 
 train_label_df = pd.read_csv('data/training_data.csv')
 train_label_df = train_label_df.drop(columns=['normal_class','Unnamed: 0'])
 ```
-
-
-
-
-```python
-train_label_df
-```
-
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-    
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>id</th>
-      <th>class</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>c1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>c2</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>c3</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>c4</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>c5</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>c6</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>c7</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>c8</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>c9</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>c10</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>c11</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>c12</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>c13</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>c14</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>c15</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>c16</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>c17</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>c18</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>c19</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>c20</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>c21</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>c22</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>c23</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>c24</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>c25</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>c26</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>c27</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>c28</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>c29</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>c30</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>55855</th>
-      <td>c55856</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55856</th>
-      <td>c55857</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55857</th>
-      <td>c55858</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55858</th>
-      <td>c55859</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55859</th>
-      <td>c55860</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>55860</th>
-      <td>c55861</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55861</th>
-      <td>c55862</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55862</th>
-      <td>c55863</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55863</th>
-      <td>c55864</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>55864</th>
-      <td>c55865</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55865</th>
-      <td>c55866</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55866</th>
-      <td>c55867</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55867</th>
-      <td>c55868</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>55868</th>
-      <td>c55869</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55869</th>
-      <td>c55870</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55870</th>
-      <td>c55871</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55871</th>
-      <td>c55872</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55872</th>
-      <td>c55873</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55873</th>
-      <td>c55874</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>55874</th>
-      <td>c55875</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55875</th>
-      <td>c55876</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55876</th>
-      <td>c55877</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55877</th>
-      <td>c55878</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55878</th>
-      <td>c55879</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55879</th>
-      <td>c55880</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55880</th>
-      <td>c55881</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55881</th>
-      <td>c55882</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55882</th>
-      <td>c55883</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55883</th>
-      <td>c55884</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>55884</th>
-      <td>c55885</td>
-      <td>0</td>
-    </tr>
-  </tbody>
-</table>
-<p>55885 rows × 2 columns</p>
-</div>
-
 
 
 ### 5.2: Preliminary Analysis
@@ -767,7 +254,7 @@ plt.subplots_adjust(top=0.82)
 
 
 
-![png](Milestone_2_files/Milestone_2_19_0.png)
+![png](Milestone_2_files/Milestone_2_12_0.png)
 
 
 The normal type (class 0) is dominant in the dataset with the four other labels almost uniformly distributed. We will therefore need to address the imbalance between the negative (normal) and positive (i.e. suspicious-growth) classes when fitting classifiers to the training set.
@@ -836,7 +323,7 @@ ax4.set_title('Class 4');
 
 
 
-![png](Milestone_2_files/Milestone_2_23_0.png)
+![png](Milestone_2_files/Milestone_2_16_0.png)
 
 
 The images above are the ROI of original scans. Without medical knowledge, it seems difficult to distinguish the different classes based on the above images. However, these are random images selected from the dataset. We also plotted the mean image for each class, illustrated below, to get a sense of whether the spatial distribution of light differs systematically by class:
@@ -871,7 +358,7 @@ for i in range(5):
 
 
 
-![png](Milestone_2_files/Milestone_2_25_1.png)
+![png](Milestone_2_files/Milestone_2_18_1.png)
 
 
 Since the images were centered at the centerpoint of the growth (calcification or mass), and growths appear as light patches in the image, the average spread of the pixel/light intensity around the image center gives a general sense of whether the size of the growth differs systematically by class. 
@@ -913,7 +400,7 @@ plt.legend();
 
 
 
-![png](Milestone_2_files/Milestone_2_29_0.png)
+![png](Milestone_2_files/Milestone_2_22_0.png)
 
 
 From the distributions above, we see that for higher class labels, the mean of the distribution is shifted to the right and the images contain more light. The left tail of the distribution for class $0$ could be an indication of un-cleaned images with text labels or black backgrounds. 
