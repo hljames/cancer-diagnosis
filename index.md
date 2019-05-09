@@ -1,10 +1,7 @@
 ---
-title: Cancer Diagnosis
+title: AC209b Final Project: Cancer Diagnosis
 
 ---
-
-# AC209b Final Project: Cancer Diagnosis
-
 
 ### David Melancon, Estefania Lahera, Hailey James, Nathan Einstein
 #### Harvard University
