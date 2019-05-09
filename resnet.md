@@ -25,7 +25,7 @@ We prepared 6 different models with ResNet50 but using different partitions and 
     - This model looks strictly at the original class 2 and 4, which are benign and malignant masses.
     
 
-We evaluate each model on the training data, the RGB test data, and the grayscale test data. We originally were only using the RGB test data, but because we had such low test accuracy, we worried that the Keras ImageDataGenerator converted the image to RGB in a different way than tf.image.grayscale_to_rgb did, so we saved the images as grayscale and repeated the process. Everything is in this notebook, but note this was a classic "it's the data science process!" moment where we had to take several steps back and try again.
+We evaluate each model on the training data, the RGB test data, and the grayscale test data. We originally were only using the RGB test data, but because we had such low test accuracy, we worried that the Keras ImageDataGenerator converted the image to RGB in a different way than tf.image.grayscale_to_rgb did, so we saved the images as grayscale and repeated the process. The process to convert the test data from the npy format to pngs and corresponding dataframes can be found [here](https://hljames.github.io/cancer-diagnosis/test_data_preparation.html). Everything is in this notebook, but note this was a classic "it's the data science process!" moment where we had to take several steps back and try again.
 
 A summary of the training and test accuracies can be found at the conclusion.
 
