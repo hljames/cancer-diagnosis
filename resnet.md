@@ -29,51 +29,6 @@ We evaluate each model on the training data, the RGB test data, and the grayscal
 
 A summary of the training and test accuracies can be found at the conclusion.
 
-
-
-```python
-'''IMPORT LIBRARIES'''
-import requests
-import os
-
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import shutil
-
-from scipy.misc import imresize
-from sklearn.model_selection import train_test_split
-
-from keras.applications.resnet50 import ResNet50
-from keras.callbacks import ModelCheckpoint, EarlyStopping
-from keras.models import Sequential, Model, load_model
-from keras.layers import Dropout, Flatten, Dense, Conv2D, MaxPooling2D
-from keras.layers import Input, Reshape, UpSampling2D, InputLayer, Lambda, ZeroPadding2D
-from keras.layers import Cropping2D, Conv2DTranspose, BatchNormalization, Activation, GlobalAveragePooling2D
-from keras.utils import np_utils, to_categorical
-from keras.losses import binary_crossentropy
-from keras import backend as K,objectives
-from keras.losses import mse, binary_crossentropy
-from keras.layers.advanced_activations import LeakyReLU
-from keras.optimizers import Adam, RMSprop
-from keras.initializers import RandomNormal
-from keras.preprocessing import image
-import tensorflow as tf
-from keras_preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
-import random
-import keras
-
-from sklearn.utils.class_weight import compute_class_weight
-from PIL import Image
-
-from IPython.core.display import HTML
-styles = requests.get("https://raw.githubusercontent.com/Harvard-IACS/2018-CS109A/master/content/styles/cs109.css").text
-HTML(styles)
-
-np.random.seed(42)
-```
-
-
 ## Loading the Data
 
 The data was prepared into csvs that were formated to have the file name and the class labels. The code for this can be found in the EDA tab.
