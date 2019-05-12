@@ -9,20 +9,6 @@ nav_include: 1
 *  
 {: toc}
 
-## Cancer Diagnosis Project
-
-Problem Statement
-
-We have decided to exploit state-of-the-art models like ResNet and VGG through transfer learning to perform classification, as past research has demonstrated that these deep CNNs perform substantially better than hand-trained, shallower networks at classification of images from the DDSM dataset [3].
-
-Once we have classified images, we plan to compare several possible techniques -- e.g. t-SNE, Shapley values, LICE, adversarial attack-like changes to the input -- to identify how the model classifies positive cases, especially where the model's result differs from the ground truth. We also plan to compare several approaches to help determine the amount of confidence that one can have in the classification (e.g. using a "trust score" similar to [4]), and to consider the degree to which such confidence scores help explain incorrect classifications as well as what factors make the model less certain of its classification.
-
-Finally, we have also considered:
-
-*   Explicitly addressing dataset bias in our model, in particular the difference in the source of "normal" images versus abnormal cases with suspicious growths, in order to prevent the classifier from making classifications based on "irrelevant" image characteristics (i.e. based on the classifier's ability to detect the dataset from which the image came). We would plan to approach this debiasing problem in a manner similar to [5].
-
-* Conducting a user study to evaluate different methods of explanation/interpretability to physicians/radiologists/medical students
-
 ## Literature review
 
 <br>
@@ -37,7 +23,7 @@ Finally, we have also considered:
 
 ---
 
-**Possible Methods of Interpretation/Explainability**:
+## Possible Methods of Interpretation/Explainability
 
 - Visualization of what each neuron is detecting. Potentially label the neurons and see which are activating in a certain classification. There is existing architecture for visualizing the network, but labeling the nodes might be challenging. [Understanding Neural Networks Through Deep Visualization
 22 Jun 2015 • Jason Yosinski • Jeff Clune • Anh Nguyen • Thomas Fuchs • Hod Lipson](https://paperswithcode.com/paper/understanding-neural-networks-through-deep)
@@ -51,13 +37,6 @@ Finally, we have also considered:
 16 Feb 2016 • Marco Tulio Ribeiro • Sameer Singh • Carlos Guestrin](https://paperswithcode.com/paper/why-should-i-trust-you-explaining-the)
 - BILE
 - SHAPELY
-
-
-
-
- 
-
-
 
 ## Data Background
 
@@ -80,7 +59,7 @@ The observations are labelled as follows:
 
 Whereas the observations of class 0 originate from the DDSM, those of classes 1-4 come from the CBIS-DDSM.
 
-## 6. References
+## References
 
 [1] Eric A. Scuccimarra, DDSM dataset, Version 10. Accessed at https://github.com/escuccim/mias-mammography
 
