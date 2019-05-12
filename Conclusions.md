@@ -14,6 +14,8 @@ Throughout this project, we came to several important conclusions about both the
 
 3. Saliency mapping could be a reasonable method of interpreting medical imaging classification models. LIME, however, appeared to be better suited to less subtle classification tasks (at least from our exploration). Both in terms of evaluating the quality of the model and opening the "black box" to both physicians and patients, saliency maps (vanilla and guided) can be a valuable tool.
 
+4. Another potentially valuable method of interpretation was asking the model to classify fragments in order to identify a region of interest. The classifier performed poorly on identifying the particular type and malignancy of the abnormalities in the complete images, though the results on first appearance suggest that the classifier at least identified the presence of an abnormality in the complete images (the classifier never predicted class 0, or “normal”). However, even after occluding the region of interest, the classifier continued to identify the images as containing a mass, revealing that it would be incorrect to conclude that the classifier had accurately identified the presence of an abnormality in the images. While it is possible that there were additional features (e.g. smaller growths) in the image that were not occluded, but which revealed the images to contain an abnormality, the saliency maps below suggest that the classifier can somewhat accurately identify the presence of an abnormality, but not the absence. 
+
 ### Possible Improvements and Future Work
 
 1. We were not able to entirely replicate the results found in our literature review -- further work could be done to more closely follow the methodology of another team in order to match their conclusions. 
