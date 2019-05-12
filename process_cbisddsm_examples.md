@@ -1,5 +1,5 @@
 ---
-title: EDA
+title: Pre-Processing Raw Images
 notebook: process_cbisddsm_examples.ipynb
 nav_include: 4
 ---
