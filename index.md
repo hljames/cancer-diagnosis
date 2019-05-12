@@ -12,4 +12,4 @@ While studies show computer vision can detect cancer with high accuracy, there i
 
 ## Project Outline
 
-In the _Introduction_ section
+In the _Introduction_ section we review the literature of cancer diagnosis using CNN while highlighting several methods to interprect and explain the classification of the neural networks. Finally, we discuss the dataset that we are using for this project. Section _EDA_ is the initial exploratory data analysis of the dataset and the _Classification Model_ section details the training, cross-validation, and testing of the different CNN models considered in the project. Section _Pre-Processing Raw Images_ investigate how the models trained on the region of interest ROI of the images can be generalized to train on the full images. Section _Unsupervised Clustering_ attempts to remove noisy images from the dataset (e.g. labels) using autoencoder.
