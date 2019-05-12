@@ -1,31 +1,13 @@
+---
+title: Unsupervised Clustering
+notebook: class0_unsupervised_clustering.ipynb
+nav_include: 5
+---
 
-
-
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-
-from sklearn.preprocessing import StandardScaler
-from skimage.transform import resize
-from keras.preprocessing import image
-from keras.callbacks import EarlyStopping
-from keras.utils import to_categorical
-from keras.models import Model, Sequential, load_model
-from keras import backend as K
-from keras.layers import *
-
-from sklearn.cluster import DBSCAN
-from sklearn.neighbors import KDTree
-
-from PIL import Image
-
-%matplotlib inline
-```
-
-
-    Using TensorFlow backend.
-    
+## Contents
+{:.no_toc}
+*  
+{: toc}
 
 ### Motivation
 
