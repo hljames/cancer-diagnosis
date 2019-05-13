@@ -1938,7 +1938,7 @@ fig.tight_layout()
 
 
 
-![png](model_evaluation_files/model_evaluation_7_0.png)
+![png](classification_models_files/model_evaluation_7_0.png)
 
 
 
@@ -1980,7 +1980,7 @@ ax.set_title("Classification certainty ($\hat{p}$) distributions by class", font
 
 
 
-![png](model_evaluation_files/model_evaluation_10_0.png)
+![png](classification_models_files/model_evaluation_10_0.png)
 
 
 
@@ -2001,7 +2001,7 @@ fig.tight_layout()
 
 
 
-![png](model_evaluation_files/model_evaluation_11_0.png)
+![png](classification_models_files/model_evaluation_11_0.png)
 
 
 By illustrating observations that the model had high or low confidence in, we see that it has learned to identify very clear masses and calcifications (though seemingly not to distinguish between the two), while it may be relying on the fact that many of the normal cases come from the edge of the breast tissue, and therefore tend to have a very different appearance, exemplified by the top-left image. This image does indeed look very different from the others, though not because it is lacking a suspicious growth.
@@ -2043,7 +2043,7 @@ fig.tight_layout()
 
 
 
-![png](model_evaluation_files/model_evaluation_16_0.png)
+![png](classification_models_files/model_evaluation_16_0.png)
 
 
 Model 2 has very low predictive ability, as indicated by the fact that the probability that the model predicts each class does not vary according to the true label. Interestingly, the model is highly biased in favor of falsely predicting the most grave case -- that the image contains a malignant mass. The following chart shows that the model's certainty of its predictions does not differ dramatically by class, and that there is a fair amount of variability in its certainty for each class, in constrast to with model 0.
@@ -2060,7 +2060,7 @@ ax.set_ylabel('Predictive certainty ($\hat{p}$)', fontsize=16);
 
 
 
-![png](model_evaluation_files/model_evaluation_18_0.png)
+![png](classification_models_files/model_evaluation_18_0.png)
 
 
 
@@ -2082,5 +2082,5 @@ fig.tight_layout()
 
 
 
-![png](model_evaluation_files/model_evaluation_19_0.png)
+![png](classification_models_files/model_evaluation_19_0.png)
 
