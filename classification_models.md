@@ -3,7 +3,11 @@ title: Classification Models
 notebook: classification_models.ipynb
 nav_include: 3
 ---
-# Classification Models
+
+## Contents
+{:.no_toc}
+*  
+{: toc}
 
 ## 1. Models Investigated
 
