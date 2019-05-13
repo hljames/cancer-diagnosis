@@ -1815,6 +1815,272 @@ display(model_2_vgg16_results)
 
 The results using the VGG16 architecture on model $2$ are marginally better with the cross-validation accuracy averaging $40$%. However, the test accuracy remains very low with $25$% indicating that the classification model is guessing at a solution.
 
-## 6. Conclusion
+## 6. Models Evaluation
 
-There results were not ideal because the accuracies are not comparable to what we've seen in the literature review. The fact that the validation accuracy and the test accuracy are not especially close is worrisome especially when the training data accuracy was so high durin training. This seems to indicate a problem with the data coming from the test dataset. Based on these results, we decided to perform interpretability methods on the training data.
+```python
+'''Build test DataGenerator'''
+
+def get_test_datagen(df, directory='data/test_images/', batch_size_test=1):
+    test_datagen = ImageDataGenerator(rescale=1./255)
+    test_generator = test_datagen.flow_from_dataframe(
+            directory=directory,
+            dataframe=df,
+            x_col='filename',
+            y_col='y',
+            target_size=(299, 299),
+            color_mode="rgb",
+            batch_size=batch_size_test,
+            class_mode="categorical",
+            shuffle=False,
+            seed=42)
+    return test_generator
+```
+
+
+
+
+```python
+# Code source: scikit-learn.org
+def plot_confusion_matrix(ax, cm, classes,
+                          normalize=False,
+                          title='Confusion matrix',
+                          cmap=plt.cm.Blues):
+
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.5)
+
+    cm_original=cm.copy()
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    img = ax.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.colorbar(img, ax=ax, cax=cax)
+    tick_marks = np.arange(len(classes))
+    ax.set(xticks=tick_marks, yticks=tick_marks)
+    ax.set_xticklabels(classes, rotation=0, fontsize=13)
+    ax.set_yticklabels(classes, fontsize=13)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    thresh = 1 / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        ax.text(j, i, format(cm[i, j]*100, '.0f') +  '%  (' +format(cm_original[i, j], 'd') + ')',
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black", fontsize=15)
+
+    ax.set_title(title, fontsize=15)
+    ax.set_ylabel('True label', fontsize=15)
+    ax.set_xlabel('Predicted label', fontsize=15)
+    ax.grid('off')
+```
+
+
+
+
+```python
+''' Code for displaying images whose class the predictor was highly certain/uncertain of '''
+
+def show_case_within_p_range(df, pred_class, y_hats, p_hats, thresh_low, thresh_high, ax, directory):
+    p_k = np.array([p_hats[i] if (y_hats[i] == pred_class) else 0 for i, p in enumerate(p_hats)])
+    
+    idx = np.where((p_k <= thresh_high) & (p_k >= thresh_low))[0][0]
+    p_val = p_hats[idx]
+    file = df.loc[idx, 'filename']
+    img = plt.imread(directory + file)
+    ax.imshow(img, cmap='gray')
+    ax.set_title('$\hat{p}$(y=' + f'{pred_class}) = {p_val:.3}', fontsize=16)
+    ax.axis('off')
+
+def show_max_certainty_case(df, pred_class, y_hats, p_hats, ax, directory):
+    p_k_max = np.max(p_hats[y_hats == pred_class])
+    show_case_within_p_range(df, pred_class, y_hats, p_hats, p_k_max, p_k_max, ax, directory)
+
+def show_min_certainty_case(df, pred_class, y_hats, p_hats, ax, directory):
+    p_k_min = np.min(p_hats[y_hats == pred_class])
+    show_case_within_p_range(df, pred_class, y_hats, p_hats, p_k_min, p_k_min, ax, directory)
+```
+
+
+### Model 0
+
+
+
+```python
+test_df_model_0 = pd.read_csv("data/test_df_model_0.csv")
+test_df_model_0['y'] = test_df_model_0['y'].astype(str)
+
+model_0 = load_model("models/resnet50_model_0_best_weights.h5")
+```
+
+
+
+
+```python
+test_generator = get_test_datagen(test_df_model_0)
+
+y_pred_0 = model_0.predict_generator(test_generator, test_generator.n)
+p_hat_0 = np.amax(y_pred_0, axis=1)
+y_hat_0 = np.argmax(y_pred_0, axis=1)
+```
+
+
+    Found 15364 images belonging to 5 classes.
+    
+
+
+
+```python
+# plot confusion matrix
+fig, ax = plt.subplots(figsize=(10,10))
+cnf_matrix = confusion_matrix(test_df_model_0['y'].astype(int), y_hat_0)
+plot_confusion_matrix(ax, cnf_matrix, classes=['N (0)','BC (1)','BM (2)','MC(3)','MM (4)'], normalize=True)
+fig.tight_layout()
+```
+
+
+
+![png](model_evaluation_files/model_evaluation_7_0.png)
+
+
+
+
+```python
+test_df_model_0['y'].value_counts(normalize=True)
+```
+
+
+
+
+
+    0    0.869565
+    2    0.041786
+    1    0.036319
+    4    0.028313
+    3    0.024017
+    Name: y, dtype: float64
+
+
+
+The confusion matrix makes apparent that model 0's high accuracy appears to be due to the fact that it accurately predicts most of the normal cases. Since we corrected for class imbalance when training the model, it would appear that either the model has successfully learned how to distinguish between the normal cases and those presenting abnormalities. This may be due, however, to the fact that there is something about the normal cases that is systematically different from the others, rather than to the fact that the model has truly learned to identify abnormalities (and the absence thereof). 
+
+Indeed, the following figure illustrates that the model appears to have unusually high confidence in its predictions of normal-class observations:
+
+
+
+```python
+# plot certainty distribution (p values) for each predicted group
+fig, ax = plt.subplots(figsize=(10,6))
+
+sns.boxplot(x='y', y='p', data=pd.DataFrame({"p":p_hat_0, "y":y_hat_0}), ax=ax, color='cornflowerblue')
+
+ax.set_xlabel("Predicted class ($\hat{y}$)", fontsize=16)
+ax.set_ylabel('Predictive certainty ($\hat{p}$)', fontsize=16)
+ax.tick_params(labelsize=12)
+ax.set_title("Classification certainty ($\hat{p}$) distributions by class", fontsize=16);
+```
+
+
+
+![png](model_evaluation_files/model_evaluation_10_0.png)
+
+
+
+
+```python
+fig, axes = plt.subplots(nrows=2, ncols=5, figsize=(18,10))
+for c in range(5):
+    show_max_certainty_case(test_df_model_0, c, y_hat_0, p_hat_0, axes[0,c], 'data/test_images/')
+    show_min_certainty_case(test_df_model_0, c, y_hat_0, p_hat_0, axes[1,c], 'data/test_images/')
+    
+for ax, row in zip(axes[:,0], ['high certainty:', 'low certainty:']):
+    ax.annotate(row, xy=(0, 0.5), xytext=(-ax.yaxis.labelpad+2, 0),
+                xycoords=ax.yaxis.label, textcoords='offset points',
+                fontsize=16, ha='right', va='center')
+
+fig.tight_layout()
+```
+
+
+
+![png](model_evaluation_files/model_evaluation_11_0.png)
+
+
+By illustrating observations that the model had high or low confidence in, we see that it has learned to identify very clear masses and calcifications (though seemingly not to distinguish between the two), while it may be relying on the fact that many of the normal cases come from the edge of the breast tissue, and therefore tend to have a very different appearance, exemplified by the top-left image. This image does indeed look very different from the others, though not because it is lacking a suspicious growth.
+
+### Model 2
+
+
+
+```python
+test_df_model_2 = pd.read_csv("data/test_df_model_2.csv")
+test_df_model_2['y'] = test_df_model_2['y'].astype(str)
+
+model_2 = load_model("models/resnet50_model_2_best_weights.h5")
+```
+
+
+
+
+```python
+test_generator = get_test_datagen(test_df_model_2)
+
+y_pred_2 = model_2.predict_generator(test_generator, test_generator.n)
+p_hat_2 = np.amax(y_pred_2, axis=1)
+y_hat_2 = np.argmax(y_pred_2, axis=1)+1
+```
+
+
+    Found 2004 images belonging to 4 classes.
+    
+
+
+
+```python
+fig, ax = plt.subplots(figsize=(10,10))
+cnf_matrix = confusion_matrix(test_df_model_2['y'].astype(int), y_hat_2)
+plot_confusion_matrix(ax, cnf_matrix[:-1,1:], classes=['BC (1)','BM (2)','MC(3)','MM (4)'], normalize=True)
+fig.tight_layout()
+```
+
+
+
+![png](model_evaluation_files/model_evaluation_16_0.png)
+
+
+Model 2 has very low predictive ability, as indicated by the fact that the probability that the model predicts each class does not vary according to the true label. Interestingly, the model is highly biased in favor of falsely predicting the most grave case -- that the image contains a malignant mass. The following chart shows that the model's certainty of its predictions does not differ dramatically by class, and that there is a fair amount of variability in its certainty for each class, in constrast to with model 0.
+
+
+
+```python
+# boxplot of certainty distribution (p values) for each predicted group
+fig, ax = plt.subplots(figsize=(10,6))
+sns.boxplot(x='y', y='p', data=pd.DataFrame({"p":p_hat_2, "y":y_hat_2}), ax=ax, color='cornflowerblue')
+ax.set_xlabel("Predicted class ($\hat{y}$)", fontsize=16)
+ax.set_ylabel('Predictive certainty ($\hat{p}$)', fontsize=16);
+```
+
+
+
+![png](model_evaluation_files/model_evaluation_18_0.png)
+
+
+
+
+```python
+fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(15,10))
+for i, c in enumerate([1,2,3,4]):
+    show_max_certainty_case(test_df_model_2, c, y_hat_2, p_hat_2, axes[0,i], 'data/test_images/')
+    show_min_certainty_case(test_df_model_2, c, y_hat_2, p_hat_2, axes[1,i], 'data/test_images/')
+
+
+for ax, row in zip(axes[:,0], ['high certainty:', 'low certainty:']):
+    ax.annotate(row, xy=(0, 0.5), xytext=(-ax.yaxis.labelpad+2, 0),
+                xycoords=ax.yaxis.label, textcoords='offset points',
+                fontsize=16, ha='right', va='center')
+
+fig.tight_layout()
+```
+
+
+
+![png](model_evaluation_files/model_evaluation_19_0.png)
+
