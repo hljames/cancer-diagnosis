@@ -29,7 +29,7 @@ We evaluate each model on the training data, the RGB test data, and the grayscal
 
 A summary of the training and test accuracies can be found at the conclusion.
 
-
+    
 ## 2. Loading the Data
 
 The data was prepared into CSV files that were formated to have the file name and the class labels. The code for this can be found in the EDA tab.
@@ -285,16 +285,12 @@ def save_all(model,model_history,model_name,arch_name):
 
 
 ```python
-def load_all(model_name,arch_name,bw=False):
-    if bw:
-        model_best_weights = load_model('models/'+arch_name+'_'+model_name+'_best_weights.h5')
-        return model_best_weights
-    else:
-        model_best_weights = load_model('models/'+arch_name+'_'+model_name+'_best_weights.h5')
-        model = load_model('models/'+arch_name+'_'+model_name+'.h5')
-        with open(arch_name+'_'+model_name+'_history.json') as json_file:  
-            model_history = json.load(json_file)
-        return model,model_best_weights,model_history
+def load_all(model_name,arch_name):
+    model = load_model('models/'+arch_name+'_'+model_name+'.h5')
+    model_best_weights = load_model('models/'+arch_name+'_'+model_name+'_best_weights.h5')
+    with open(arch_name+'_'+model_name+'_history.json') as json_file:  
+        model_history = json.load(json_file)
+    return model,model_best_weights,model_history
 ```
 
 
@@ -349,6 +345,23 @@ model_0, train_generator_0, val_generator_0, class_weights_0, STEP_SIZE_TRAIN_0,
                 W = W,
                 n_channels = 3)
 ```
+
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/pandas/core/frame.py:3697: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+      errors=errors)
+    
+
+    Found 44708 images belonging to 5 classes.
+    Found 11177 images belonging to 5 classes.
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras_applications/resnet50.py:265: UserWarning: The output shape of `ResNet50(include_top=False)` has been changed since Keras 2.2.0.
+      warnings.warn('The output shape of `ResNet50(include_top=False)` '
+    
+
 
 
 ```python
@@ -425,14 +438,12 @@ save_all(model_0,model_0_history,model_0_name,arch_name)
 
 ```python
 %%time
-model_0_name = 'model_0'
-# model_0,model_0_best_weights,model_0_history = load_all(model_0_name,arch_name)
-model_0_best_weights = load_all(model_0_name,arch_name,True)
+model_0,model_0_best_weights,model_0_history = load_all(model_0_name,arch_name)
 ```
 
 
-    CPU times: user 32.1 s, sys: 1.41 s, total: 33.5 s
-    Wall time: 38.8 s
+    CPU times: user 1min 30s, sys: 0 ns, total: 1min 30s
+    Wall time: 1min 30s
     
 
 #### Model 0 Evaluation
@@ -463,8 +474,8 @@ model_0_bw_train_metrics, model_0_bw_test_metrics = evaluate_train_test(model_0_
 ```
 
 
-    CPU times: user 37min 15s, sys: 5min 44s, total: 43min
-    Wall time: 21min 40s
+    CPU times: user 19min 22s, sys: 5min 57s, total: 25min 19s
+    Wall time: 21min 3s
     
 
 
@@ -506,11 +517,19 @@ display(model_0_results)
   <tbody>
     <tr>
       <th>0</th>
+      <td>Model 0</td>
+      <td>3.401501</td>
+      <td>0.351688</td>
+      <td>4.248569</td>
+      <td>0.281047</td>
+    </tr>
+    <tr>
+      <th>1</th>
       <td>Best Weights Model 0</td>
-      <td>0.284514</td>
-      <td>0.918173</td>
-      <td>1.555544</td>
-      <td>0.758657</td>
+      <td>0.284465</td>
+      <td>0.918166</td>
+      <td>1.557154</td>
+      <td>0.758526</td>
     </tr>
   </tbody>
 </table>
@@ -604,6 +623,23 @@ model_1, train_generator_1, val_generator_1, class_weights_1, STEP_SIZE_TRAIN_1,
 ```
 
 
+    /usr/share/anaconda3/lib/python3.6/site-packages/pandas/core/frame.py:3697: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+      errors=errors)
+    
+
+    Found 42261 images belonging to 5 classes.
+    Found 10566 images belonging to 5 classes.
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras_applications/resnet50.py:265: UserWarning: The output shape of `ResNet50(include_top=False)` has been changed since Keras 2.2.0.
+      warnings.warn('The output shape of `ResNet50(include_top=False)` '
+    
+
+
+
 ```python
 %%time
 model_1_name = 'model_1'
@@ -640,15 +676,9 @@ save_all(model_1,model_1_history,model_1_name,arch_name)
 
 ```python
 %%time
-model_1_name = 'model_1'
-# model_1,model_1_best_weights,model_1_history = load_all(model_1_name,arch_name)
-model_1_best_weights = load_all(model_1_name,arch_name,True)
+model_1,model_1_best_weights,model_1_history = load_all(model_1_name,arch_name)
 ```
 
-
-    CPU times: user 59.4 s, sys: 364 ms, total: 59.8 s
-    Wall time: 1min 1s
-    
 
 #### Model 1 Evaluation
 
@@ -674,10 +704,6 @@ model_1_bw_train_metrics, model_1_bw_test_metrics = evaluate_train_test(model_1_
 ```
 
 
-    CPU times: user 36min 49s, sys: 5min 13s, total: 42min 3s
-    Wall time: 21min 33s
-    
-
 
 
 ```python
@@ -686,46 +712,6 @@ model_1_results = pretty_metrics(1,
                                  model_1_bw_test_metrics)
 display(model_1_results)
 ```
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Model</th>
-      <th>training loss</th>
-      <th>training acc</th>
-      <th>test loss</th>
-      <th>test acc</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Best Weights Model 1</td>
-      <td>2.22387</td>
-      <td>0.862027</td>
-      <td>2.10236</td>
-      <td>0.869565</td>
-    </tr>
-  </tbody>
-</table>
-</div>
 
 
 ### Model 2: Classification of Abnormalities (Classes 1 to 4)
@@ -745,6 +731,22 @@ model_2, train_generator_2, val_generator_2, class_weights_2, STEP_SIZE_TRAIN_2,
                 W = W, 
                 n_channels = 3)
 ```
+
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/pandas/core/frame.py:3697: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+      errors=errors)
+    
+
+    Found 5831 images belonging to 4 classes.
+    Found 1458 images belonging to 4 classes.
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras_applications/resnet50.py:265: UserWarning: The output shape of `ResNet50(include_top=False)` has been changed since Keras 2.2.0.
+      warnings.warn('The output shape of `ResNet50(include_top=False)` '
+    
 
 
 
@@ -862,14 +864,12 @@ save_all(model_2,model_2_history,model_2_name,arch_name)
 
 ```python
 %%time
-model_2_name = 'model_2'
-# model_2,model_2_best_weights,model_2_history = load_all(model_2_name,arch_name)
-model_2_best_weights = load_all(model_2_name,arch_name,True)
+model_2,model_2_best_weights,model_2_history = load_all(model_2_name,arch_name)
 ```
 
 
-    CPU times: user 2min 10s, sys: 96 ms, total: 2min 10s
-    Wall time: 2min 10s
+    CPU times: user 1min 42s, sys: 0 ns, total: 1min 42s
+    Wall time: 1min 42s
     
 
 #### Model 2 Evaluation
@@ -896,58 +896,15 @@ model_2_bw_train_metrics, model_2_bw_test_metrics = evaluate_train_test(model_2_
 ```
 
 
-    CPU times: user 5min 44s, sys: 41.7 s, total: 6min 25s
-    Wall time: 3min 26s
-    
-
 
 
 ```python
-model_2_results = pretty_metrics(2,
+model_2_results = pretty_metrics(2, model_2_train_metrics, 
+                                 model_2_test_metrics, 
                                  model_2_bw_train_metrics, 
                                  model_2_bw_test_metrics)
 display(model_2_results)
 ```
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Model</th>
-      <th>training loss</th>
-      <th>training acc</th>
-      <th>test loss</th>
-      <th>test acc</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Best Weights Model 2</td>
-      <td>1.110618</td>
-      <td>0.658482</td>
-      <td>3.022887</td>
-      <td>0.251996</td>
-    </tr>
-  </tbody>
-</table>
-</div>
 
 
 ### Model 3: Normal vs Abnormal (Class 0 vs 1-4)
@@ -967,6 +924,23 @@ model_3, train_generator_3, val_generator_3, class_weights_3, STEP_SIZE_TRAIN_3,
                 W = W, 
                 n_channels = 3)
 ```
+
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/pandas/core/frame.py:3697: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+      errors=errors)
+    
+
+    Found 42261 images belonging to 2 classes.
+    Found 10566 images belonging to 2 classes.
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras_applications/resnet50.py:265: UserWarning: The output shape of `ResNet50(include_top=False)` has been changed since Keras 2.2.0.
+      warnings.warn('The output shape of `ResNet50(include_top=False)` '
+    
+
 
 
 ```python
@@ -995,6 +969,73 @@ model_3_history = model_3.fit_generator(generator=train_generator_3,
       49/1320 [>.............................] - ETA: 33:42 - loss: 0.0444 - acc: 0.9815
 
 
+    ---------------------------------------------------------------------------
+
+    KeyboardInterrupt                         Traceback (most recent call last)
+
+    <timed exec> in <module>
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras/legacy/interfaces.py in wrapper(*args, **kwargs)
+         89                 warnings.warn('Update your `' + object_name + '` call to the ' +
+         90                               'Keras 2 API: ' + signature, stacklevel=2)
+    ---> 91             return func(*args, **kwargs)
+         92         wrapper._original_function = func
+         93         return wrapper
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras/engine/training.py in fit_generator(self, generator, steps_per_epoch, epochs, verbose, callbacks, validation_data, validation_steps, class_weight, max_queue_size, workers, use_multiprocessing, shuffle, initial_epoch)
+       1416             use_multiprocessing=use_multiprocessing,
+       1417             shuffle=shuffle,
+    -> 1418             initial_epoch=initial_epoch)
+       1419 
+       1420     @interfaces.legacy_generator_methods_support
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras/engine/training_generator.py in fit_generator(model, generator, steps_per_epoch, epochs, verbose, callbacks, validation_data, validation_steps, class_weight, max_queue_size, workers, use_multiprocessing, shuffle, initial_epoch)
+        215                 outs = model.train_on_batch(x, y,
+        216                                             sample_weight=sample_weight,
+    --> 217                                             class_weight=class_weight)
+        218 
+        219                 outs = to_list(outs)
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras/engine/training.py in train_on_batch(self, x, y, sample_weight, class_weight)
+       1215             ins = x + y + sample_weights
+       1216         self._make_train_function()
+    -> 1217         outputs = self.train_function(ins)
+       1218         return unpack_singleton(outputs)
+       1219 
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras/backend/tensorflow_backend.py in __call__(self, inputs)
+       2713                 return self._legacy_call(inputs)
+       2714 
+    -> 2715             return self._call(inputs)
+       2716         else:
+       2717             if py_any(is_tensor(x) for x in inputs):
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras/backend/tensorflow_backend.py in _call(self, inputs)
+       2673             fetched = self._callable_fn(*array_vals, run_metadata=self.run_metadata)
+       2674         else:
+    -> 2675             fetched = self._callable_fn(*array_vals)
+       2676         return fetched[:len(self.outputs)]
+       2677 
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/tensorflow/python/client/session.py in __call__(self, *args, **kwargs)
+       1437           ret = tf_session.TF_SessionRunCallable(
+       1438               self._session._session, self._handle, args, status,
+    -> 1439               run_metadata_ptr)
+       1440         if run_metadata:
+       1441           proto_data = tf_session.TF_GetBuffer(run_metadata_ptr)
+    
+
+    KeyboardInterrupt: 
+
+
+
 
 ```python
 save_all(model_3,model_3_history,model_3_name,arch_name)
@@ -1005,15 +1046,9 @@ save_all(model_3,model_3_history,model_3_name,arch_name)
 
 ```python
 %%time
-model_3_name = 'model_3'
-# model_3,model_3_best_weights,model_3_history = load_all(model_3_name,arch_name)
-model_3_best_weights = load_all(model_3_name,arch_name,True)
+model_3,model_3_best_weights,model_3_history = load_all(model_3_name,arch_name)
 ```
 
-
-    CPU times: user 1min 36s, sys: 260 ms, total: 1min 36s
-    Wall time: 1min 38s
-    
 
 #### Model 3 Evaluation
 The training of model $3$ was interrupted by a sudden loss of connection with the Jupyter Hub server. Therefore, while we have save the model with the best weights, the history was not saved in order to plot the accuracy and loss vs number of epochs.
@@ -1036,10 +1071,6 @@ model_3_bw_train_metrics, model_3_bw_test_metrics = evaluate_train_test(model_3_
 ```
 
 
-    CPU times: user 39min 12s, sys: 5min 15s, total: 44min 28s
-    Wall time: 22min 57s
-    
-
 
 
 ```python
@@ -1048,46 +1079,6 @@ model_3_results = pretty_metrics(3,
                                  model_3_bw_test_metrics)
 display(model_3_results)
 ```
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Model</th>
-      <th>training loss</th>
-      <th>training acc</th>
-      <th>test loss</th>
-      <th>test acc</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Best Weights Model 3</td>
-      <td>0.499556</td>
-      <td>0.750047</td>
-      <td>1.309038</td>
-      <td>0.59685</td>
-    </tr>
-  </tbody>
-</table>
-</div>
 
 
 Now we evaluate the model only on the grayscale test data. Again, the results are identical to the RGB image results.
@@ -1111,6 +1102,23 @@ model_4, train_generator_4, val_generator_4, class_weights_4, STEP_SIZE_TRAIN_4,
 ```
 
 
+    /usr/share/anaconda3/lib/python3.6/site-packages/pandas/core/frame.py:3697: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+      errors=errors)
+    
+
+    Found 2852 images belonging to 2 classes.
+    Found 714 images belonging to 2 classes.
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras_applications/resnet50.py:265: UserWarning: The output shape of `ResNet50(include_top=False)` has been changed since Keras 2.2.0.
+      warnings.warn('The output shape of `ResNet50(include_top=False)` '
+    
+
+
+
 ```python
 %%time
 model_4_name = 'model_4'
@@ -1129,6 +1137,90 @@ model_4_history = model_4.fit_generator(generator=train_generator_4,
 ```
 
 
+    Epoch 1/20
+    89/89 [==============================] - 169s 2s/step - loss: 0.6356 - acc: 0.6387 - val_loss: 1.0048 - val_acc: 0.4588
+    
+    Epoch 00001: val_acc improved from -inf to 0.45881, saving model to models/resnet50_model_4_best_weights.h5
+    Epoch 2/20
+    89/89 [==============================] - 149s 2s/step - loss: 0.4564 - acc: 0.7683 - val_loss: 0.7639 - val_acc: 0.6422
+    
+    Epoch 00002: val_acc improved from 0.45881 to 0.64223, saving model to models/resnet50_model_4_best_weights.h5
+    Epoch 3/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.2891 - acc: 0.8733 - val_loss: 0.9219 - val_acc: 0.5674
+    
+    Epoch 00003: val_acc did not improve from 0.64223
+    Epoch 4/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.1746 - acc: 0.9340 - val_loss: 0.6685 - val_acc: 0.6848
+    
+    Epoch 00004: val_acc improved from 0.64223 to 0.68475, saving model to models/resnet50_model_4_best_weights.h5
+    Epoch 5/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.1606 - acc: 0.9386 - val_loss: 1.1013 - val_acc: 0.6891
+    
+    Epoch 00005: val_acc improved from 0.68475 to 0.68915, saving model to models/resnet50_model_4_best_weights.h5
+    Epoch 6/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0991 - acc: 0.9694 - val_loss: 1.9235 - val_acc: 0.4795
+    
+    Epoch 00006: val_acc did not improve from 0.68915
+    Epoch 7/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0675 - acc: 0.9761 - val_loss: 0.8757 - val_acc: 0.6569
+    
+    Epoch 00007: val_acc did not improve from 0.68915
+    Epoch 8/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0869 - acc: 0.9667 - val_loss: 1.0296 - val_acc: 0.6877
+    
+    Epoch 00008: val_acc did not improve from 0.68915
+    Epoch 9/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0761 - acc: 0.9733 - val_loss: 3.1756 - val_acc: 0.4545
+    
+    Epoch 00009: val_acc did not improve from 0.68915
+    Epoch 10/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0288 - acc: 0.9912 - val_loss: 1.1129 - val_acc: 0.7185
+    
+    Epoch 00010: val_acc improved from 0.68915 to 0.71848, saving model to models/resnet50_model_4_best_weights.h5
+    Epoch 11/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0349 - acc: 0.9881 - val_loss: 1.5383 - val_acc: 0.5968
+    
+    Epoch 00011: val_acc did not improve from 0.71848
+    Epoch 12/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.1409 - acc: 0.9543 - val_loss: 0.9256 - val_acc: 0.6760
+    
+    Epoch 00012: val_acc did not improve from 0.71848
+    Epoch 13/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0802 - acc: 0.9726 - val_loss: 1.0292 - val_acc: 0.6554
+    
+    Epoch 00013: val_acc did not improve from 0.71848
+    Epoch 14/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0308 - acc: 0.9909 - val_loss: 1.8242 - val_acc: 0.6584
+    
+    Epoch 00014: val_acc did not improve from 0.71848
+    Epoch 15/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0225 - acc: 0.9919 - val_loss: 2.4195 - val_acc: 0.6261
+    
+    Epoch 00015: val_acc did not improve from 0.71848
+    Epoch 16/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.1727 - acc: 0.9484 - val_loss: 0.9426 - val_acc: 0.6994
+    
+    Epoch 00016: val_acc did not improve from 0.71848
+    Epoch 17/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0759 - acc: 0.9744 - val_loss: 0.8693 - val_acc: 0.6760
+    
+    Epoch 00017: val_acc did not improve from 0.71848
+    Epoch 18/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0202 - acc: 0.9940 - val_loss: 1.4713 - val_acc: 0.6290
+    
+    Epoch 00018: val_acc did not improve from 0.71848
+    Epoch 19/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0053 - acc: 0.9993 - val_loss: 1.6606 - val_acc: 0.6745
+    
+    Epoch 00019: val_acc did not improve from 0.71848
+    Epoch 20/20
+    89/89 [==============================] - 147s 2s/step - loss: 0.0036 - acc: 0.9993 - val_loss: 1.1412 - val_acc: 0.7727
+    
+    Epoch 00020: val_acc improved from 0.71848 to 0.77273, saving model to models/resnet50_model_4_best_weights.h5
+    CPU times: user 39min 13s, sys: 11min 5s, total: 50min 19s
+    Wall time: 49min 48s
+    
+
 
 
 ```python
@@ -1139,16 +1231,9 @@ save_all(model_4,model_4_history,model_4_name,arch_name)
 
 
 ```python
-%%time
-model_4_name = 'model_4'
-# model_4,model_4_best_weights,model_4_history = load_all(model_4_name,arch_name)
-model_4_best_weights = load_all(model_4_name,arch_name,True)
+model_4,model_4_best_weights,model_4_history = load_all(model_4_name,arch_name)
 ```
 
-
-    CPU times: user 2min 50s, sys: 0 ns, total: 2min 50s
-    Wall time: 2min 51s
-    
 
 #### Model 4 Evaluation
 
@@ -1174,8 +1259,8 @@ model_4_bw_train_metrics, model_4_bw_test_metrics = evaluate_train_test(model_4_
 ```
 
 
-    CPU times: user 3min 5s, sys: 19.9 s, total: 3min 25s
-    Wall time: 1min 57s
+    CPU times: user 2min 34s, sys: 18.9 s, total: 2min 53s
+    Wall time: 1min 34s
     
 
 
@@ -1217,10 +1302,18 @@ display(model_4_results)
   <tbody>
     <tr>
       <th>0</th>
-      <td>Best Weights Model 4</td>
-      <td>0.00322</td>
-      <td>0.999298</td>
+      <td>Model 4</td>
+      <td>0.002953</td>
+      <td>0.999291</td>
       <td>1.889246</td>
+      <td>0.523193</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Best Weights Model 4</td>
+      <td>0.003161</td>
+      <td>0.999291</td>
+      <td>1.883495</td>
       <td>0.523193</td>
     </tr>
   </tbody>
@@ -1245,6 +1338,23 @@ model_5, train_generator_5, val_generator_5, class_weights_5, STEP_SIZE_TRAIN_5,
                 W = W, 
                 n_channels = 3)
 ```
+
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/pandas/core/frame.py:3697: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+      errors=errors)
+    
+
+    Found 2978 images belonging to 2 classes.
+    Found 745 images belonging to 2 classes.
+    
+
+    /usr/share/anaconda3/lib/python3.6/site-packages/keras_applications/resnet50.py:265: UserWarning: The output shape of `ResNet50(include_top=False)` has been changed since Keras 2.2.0.
+      warnings.warn('The output shape of `ResNet50(include_top=False)` '
+    
+
 
 
 ```python
@@ -1361,14 +1471,12 @@ save_all(model_5,model_5_history,model_5_name,arch_name)
 
 ```python
 %%time
-model_5_name = 'model_3'
-# model_5,model_5_best_weights,model_5_history = load_all(model_5_name,arch_name)
-model_5_best_weights = load_all(model_5_name,arch_name,True)
+model_5,model_5_best_weights,model_5_history = load_all(model_5_name,arch_name)
 ```
 
 
-    CPU times: user 3min 42s, sys: 0 ns, total: 3min 42s
-    Wall time: 3min 42s
+    CPU times: user 4min 40s, sys: 0 ns, total: 4min 40s
+    Wall time: 4min 40s
     
 
 #### Model 5 Evaluation
@@ -1395,8 +1503,8 @@ model_5_bw_train_metrics, model_5_bw_test_metrics = evaluate_train_test(model_5_
 ```
 
 
-    CPU times: user 3min 41s, sys: 22 s, total: 4min 3s
-    Wall time: 2min 20s
+    CPU times: user 1min 52s, sys: 23.8 s, total: 2min 16s
+    Wall time: 1min 56s
     
 
 
@@ -1438,11 +1546,19 @@ display(model_5_results)
   <tbody>
     <tr>
       <th>0</th>
+      <td>Model 5</td>
+      <td>1.104476</td>
+      <td>0.667006</td>
+      <td>1.556385</td>
+      <td>0.482823</td>
+    </tr>
+    <tr>
+      <th>1</th>
       <td>Best Weights Model 5</td>
-      <td>1.679094</td>
-      <td>0.490255</td>
-      <td>1.696223</td>
-      <td>0.530176</td>
+      <td>0.218339</td>
+      <td>0.914800</td>
+      <td>1.711712</td>
+      <td>0.578459</td>
     </tr>
   </tbody>
 </table>
@@ -1460,93 +1576,13 @@ Because the RGB and grayscale test data results were essentially the same, we si
 ```python
 all_results = pd.concat([model_0_results, 
                          model_1_results, model_2_results, model_3_results, model_4_results, model_5_results])
-display(all_results)
+display(all_results_df)
 ```
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Model</th>
-      <th>training loss</th>
-      <th>training acc</th>
-      <th>test loss</th>
-      <th>test acc</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Best Weights Model 0</td>
-      <td>0.284514</td>
-      <td>0.918173</td>
-      <td>1.555544</td>
-      <td>0.758657</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>Best Weights Model 1</td>
-      <td>2.223870</td>
-      <td>0.862027</td>
-      <td>2.102360</td>
-      <td>0.869565</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>Best Weights Model 2</td>
-      <td>1.110618</td>
-      <td>0.658482</td>
-      <td>3.022887</td>
-      <td>0.251996</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>Best Weights Model 3</td>
-      <td>0.499556</td>
-      <td>0.750047</td>
-      <td>1.309038</td>
-      <td>0.596850</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>Best Weights Model 4</td>
-      <td>0.003220</td>
-      <td>0.999298</td>
-      <td>1.889246</td>
-      <td>0.523193</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>Best Weights Model 5</td>
-      <td>1.679094</td>
-      <td>0.490255</td>
-      <td>1.696223</td>
-      <td>0.530176</td>
-    </tr>
-  </tbody>
-</table>
-</div>
 
 
 ### Analysis of the Results
 
-As can be seen from the table above, there exist a clear gap between the very high training and very low test set accuracies for each model. Only models $0$ and $1$ have test accuracy above $75$% while the other models perform slightly better than random selection. This might indicate that we are over-fitting on the training set. However, as shown for models $0$, $4$, and $5$, the accuracy on the cross-validation is above $70$% and can even attain $90$% (model $0$). Only model $2$ seems to indicate over-fitting with very low accuracy on the cross-validation set with the number of epochs. To investigate if this low test accuracy is due to the model architecture, we try in the next section to tran model $2$ on the VGG16 architecture.
+As can be seen from the table above, there exist a clear gap between the very high training and very low test set accuracies for each model. This might indicate that we are over-fitting on the training set. However, as shown for models $0$, $4$, and $5$, the accuracy on the cross-validation is above $70$% and can even attain $90$% (model $0$). Only model $2$ seems to indicate over-fitting with very low accuracy on the cross-validation set with the number of epochs. To investigate if this low test accuracy is due to the model architecture, we try in the next section to tran model $2$ on the VGG16 architecture.
 
 ## 5. Model Training on VGG16
 To investigate the influence of the CNN architecture, we train the model $2$ (classification of abnormalities) which had very low cross-validation accuracy on the VGG16 architecture with transfer learning coming from the _imagenet_ dataset. 
@@ -2051,5 +2087,4 @@ fig.tight_layout()
 
 
 ![png](classification_models_files/model_evaluation_19_0.png)
-
 
