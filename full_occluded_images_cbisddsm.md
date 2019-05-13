@@ -1,6 +1,6 @@
 ---
-title: Pre-Processing Raw Images
-notebook: process_cbisddsm_examples.ipynb
+title: Pre-Processing and Analysis Raw Images
+notebook: full_occluded_images_cbisddsm.ipynb
 nav_include: 4
 ---
 
@@ -8,6 +8,9 @@ nav_include: 4
 {:.no_toc}
 *  
 {: toc}
+
+
+# Data Pre-Processing
 
 While time constraints prevented us from being able to prepare the entire CBIS-DDSM dataset for training and testing our models, we were interested in determining the degree to which the models trained on just the regions of interest would generalize to the entire image, both with respect to identifying the location of the abnormality itself (a segmentation problem) and accurately classifying that abnormality (a classification problem). Furthermore, we were interested in comparing the model's performance -- both with respect to its classifications and using saliency maps -- on the same image, with and without the ROI occluded. This CNN-interpretability technique, outlined in Zeiler and Fergus, *Visualizing and Understanding Convolutional Networks* (2013), would require access to the full images in addition to just the image patches within the ROI. 
 
@@ -198,7 +201,7 @@ axes[2,1].imshow(plt.imread("calcification/" + calc_files_table['00390']['full']
 
 
 
-![png](process_cbisddsm_examples_files/process_cbisddsm_examples_9_0.png)
+![png](full_occluded_images_cbisddsm_files/full_occluded_images_cbisddsm_10_0.png)
 
 
 
@@ -320,7 +323,7 @@ axes[2,1].imshow(plt.imread("calcification/" + calc_files_table['00390']['full']
 
 
 
-![png](process_cbisddsm_examples_files/process_cbisddsm_examples_14_0.png)
+![png](full_occluded_images_cbisddsm_files/full_occluded_images_cbisddsm_15_0.png)
 
 
 
@@ -341,3 +344,162 @@ for uid in list(calc_imgs_masked.keys()):
     img.save(f"masked_images/calc_299x299_50buf_mask_{uid}.png", "PNG")    
 ```
 
+
+# Analysis: prediction on full images + occluding ROIs
+
+
+
+```python
+full_img_df = pd.DataFrame({'subtlety': [5,5,5,5,3,3,3,3], 
+                            'y': ['1','2','3','4'] * 2, 
+                            'filename': ["calc_full299x299_00344.png", "mass_full299x299_00173.png", 
+                                         "calc_full299x299_00390.png", "mass_full299x299_00016.png",
+                                         "calc_full299x299_00325.png", "mass_full299x299_00177.png",
+                                         "calc_full299x299_00497.png", "mass_full299x299_00324.png"]})
+
+masked_img_df = pd.DataFrame({'y': ['1','2','3','4'] * 2, 
+                              'filename': ["calc_299x299_50buf_mask_00344.png", "mass_299x299_50buf_mask_00173.png", 
+                                           "calc_299x299_50buf_mask_00390.png", "mass_299x299_50buf_mask_00016.png",
+                                           "calc_299x299_50buf_mask_00325.png", "mass_299x299_50buf_mask_00177.png",
+                                           "calc_299x299_50buf_mask_00497.png", "mass_299x299_50buf_mask_00324.png"]})
+
+full_img_datagen = get_test_datagen(full_img_df, directory='data/CBIS-DDSM_examples/output_images/')
+masked_img_datagen = get_test_datagen(masked_img_df, directory='data/CBIS-DDSM_examples/masked_images/')
+```
+
+
+    Found 8 images belonging to 4 classes.
+    Found 8 images belonging to 4 classes.
+    
+
+
+
+```python
+y_pred_full_img = model_0.predict_generator(full_img_datagen, full_img_datagen.n)
+p_hat_full_img = np.amax(y_pred_full_img, axis=1)
+y_hat_full_img = np.argmax(y_pred_full_img, axis=1)
+```
+
+
+
+
+```python
+y_pred_masked_img = model_0.predict_generator(masked_img_datagen, masked_img_datagen.n)
+p_hat_masked_img = np.amax(y_pred_masked_img, axis=1)
+y_hat_masked_img = np.argmax(y_pred_masked_img, axis=1)
+```
+
+
+
+
+```python
+pd.DataFrame({"True $y$ (complete image)": ['1','2','3','4'] * 2,
+              "$\hat{y}$: complete image": y_hat_full_img,
+              "$\hat{p}$: complete image": p_hat_full_img,
+              "$\hat{y}$: masked image": y_hat_masked_img,
+              "$\hat{p}$: masked image": p_hat_masked_img})
+```
+
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>True $y$ (complete image)</th>
+      <th>$\hat{y}$: complete image</th>
+      <th>$\hat{p}$: complete image</th>
+      <th>$\hat{y}$: masked image</th>
+      <th>$\hat{p}$: masked image</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>4</td>
+      <td>0.688789</td>
+      <td>4</td>
+      <td>0.708869</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>4</td>
+      <td>0.712141</td>
+      <td>4</td>
+      <td>0.568441</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>4</td>
+      <td>0.641636</td>
+      <td>4</td>
+      <td>0.650779</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>1</td>
+      <td>0.265910</td>
+      <td>0</td>
+      <td>0.741181</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1</td>
+      <td>4</td>
+      <td>0.515154</td>
+      <td>4</td>
+      <td>0.480932</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2</td>
+      <td>4</td>
+      <td>0.484582</td>
+      <td>4</td>
+      <td>0.479284</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>3</td>
+      <td>4</td>
+      <td>0.459287</td>
+      <td>0</td>
+      <td>0.469885</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>4</td>
+      <td>0</td>
+      <td>0.393802</td>
+      <td>0</td>
+      <td>0.493522</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+The classifier performed poorly on identifying the particular type and malignancy of the abnormalities in the complete images, though the results on first appearance suggest that the classifier at least identified the presence of an abnormality in the complete images (with the one exception of the final image in which the model egregiously misclassifies an image with a malignant mass as lacking any sort of suspicious abnormality). 
+
+However, even after occluding the region of interest, the classifier continued to identify most of the images as containing a mass, revealing that it would be incorrect to conclude that the classifier had accurately identified the presence of an abnormality in the images. It is possible that there were additional features (e.g. smaller growths) in the image that were not occluded, but which revealed the images to contain an abnormality. To test this, we would have wished to create saliency maps for these images, both with and without the occluded regions of interest. Unfortunately, time did not permit us to do so.
