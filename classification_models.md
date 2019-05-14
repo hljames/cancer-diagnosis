@@ -25,6 +25,10 @@ We prepared 6 different models to test on the ResNet50 architecutre as well as t
 - Model 5: Benign vs Malignant Mass
     - This model looks strictly at the original class 2 and 4, which are benign and malignant masses.
     
+<p align="center">
+  <img src="resources/models.png">
+</p>
+    
 We evaluate each model on the training data, the RGB test data, and the grayscale test data. We originally were only using the RGB test data, but because we had such low test accuracy, we worried that the Keras ImageDataGenerator converted the image to RGB in a different way than tf.image.grayscale_to_rgb did, so we saved the images as grayscale and repeated the process. Everything is in this notebook, but note this was a classic "it's the data science process!" moment where we had to take several steps back and try again.
 
 A summary of the training and test accuracies can be found at the conclusion.
