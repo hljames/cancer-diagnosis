@@ -21,3 +21,5 @@ Throughout this project, we came to several important conclusions about both the
 1. We were not able to entirely replicate the results found in our literature review -- further work could be done to more closely follow the methodology of another team in order to match their conclusions. 
 
 2. More careful cleaning of the normal dataset could improve the results of our model. This could be done either through using a different dataset or through further work on the unsupervised clustering (truncated due to limited time). 
+
+3. Giving the model the option to abstain. Currently, our model simply outputs a class, and if we peel back one layer, a confidence measure for that class. Giving the model the option to abstain given low confidence could improve usage of the model in the real world and avoid conflicting results with physicians when trying to predict a difficult image.
