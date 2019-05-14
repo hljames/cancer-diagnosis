@@ -211,6 +211,10 @@ As with the results from model 2, these saliency maps make clear that model 5 ha
 
 As a local surrogate model, LIME performs image segmentation to identify super-pixels in an single input image, then measures how the output of the model changes as super-pixels are included or omitted ("perturbing" the input). In this way, LIME clearly identifies which contiguous regions of the input contribute to the model's decision, and would therefore appear to be a valuable addition to the saliency maps, which did not offer clear a perspective into what features of the images the model used to identify among types of abnormalities. 
 
+<p align="center">
+  <img src="resources/lime.png">
+</p>
+
 However, we were unable to extract meaningful results from LIME, as shown below. This was in part due to the fact that many of the classification decisions appeared to be made because of the absence of not-obviously-meaningful content in the images. Additionally, it is well-documented that LIME is highly sensitive to the choice of segmentation-algorithm parameters, which influence which super-pixels are identified.$^1$ 
 
 
@@ -355,6 +359,9 @@ axes[1].imshow(mark_boundaries(temp / 2 + 0.5, mask))
 
 We were unfortunately unable to exploit Shapley values as yet another alternative to the two previous interpretability metrics given resource constraints. With more time, we would have been interested in investigating Deep SHAP, which approximates SHAP values in order to reduce the algorithm's complexity, enabling it to be used for deep learning models.
 
+<p align="center">
+  <img src="resources/shapley.png">
+</p>
 
 
 ```python
